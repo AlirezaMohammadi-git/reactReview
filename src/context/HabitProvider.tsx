@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { HabitContext } from "../hooks/useHabits";
-import type { Habit, HabitDate } from "../lib/types";
-import { getWeek } from "date-fns";
-import { faIR } from "date-fns/locale";
+import type { Habit } from "../lib/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export default function HabitProvider({
@@ -11,12 +9,7 @@ export default function HabitProvider({
   children: React.ReactNode;
 }) {
   const [habits, setHabit] = useLocalStorage<Habit[]>("habits", []);
-  const [habitDate, setHabitDate] = useState<HabitDate>(() => {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-    return { year, month, weekNumber: getWeek(currentDate, { locale: faIR }) };
-  });
+  const [weekOffset, setWeekOffset] = useState(0);
 
   //################ Functions to add, delete, and toggle habit completion ################
   //#######################################################################################
@@ -27,14 +20,6 @@ export default function HabitProvider({
       completed: [],
     };
     setHabit((prevHabits) => [...prevHabits, newHabit]);
-    setHabitDate(() => {
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1; // Months are zero-based
-      const weekNumber = getWeek(new Date(), { locale: faIR });
-      const newHabitDate: HabitDate = { year, month, weekNumber };
-      return newHabitDate;
-    });
   };
   const deleteHabit = (id: string) => {
     setHabit((prevHabits) => prevHabits.filter((habit) => habit.id !== id));
@@ -69,8 +54,8 @@ export default function HabitProvider({
         addHabit,
         deleteHabit,
         toggleHabitCompletion,
-        habitDate,
-        setHabitDate,
+        weekOffset,
+        setWeekOffset,
       }}
     >
       {children}

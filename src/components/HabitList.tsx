@@ -1,10 +1,13 @@
 import { Flame } from "lucide-react";
 import { faIR } from "date-fns/locale";
 import {
+  addWeeks,
   eachDayOfInterval,
+  endOfWeek,
   format,
   isFuture,
   isSameDay,
+  startOfWeek,
   subDays,
 } from "date-fns";
 import { Button } from "./ui/button";
@@ -51,15 +54,11 @@ function HabitItem({
   deleteHabit: (id: string) => void;
   toggleHabitCompletion: (id: string, date: Date) => void;
 }) {
-  const { habitDate } = useHabits();
-  const { year, month, weekNumber } = habitDate;
-  const weekDates = getStartEndOfWeekInMonth(year, month, weekNumber, {
-    locale: faIR,
-  });
-
+  const { weekOffset } = useHabits();
+  const today = new Date();
   const visibleDates = eachDayOfInterval({
-    start: weekDates.start,
-    end: weekDates.end,
+    start: addWeeks(startOfWeek(today, { locale: faIR }), weekOffset),
+    end: addWeeks(endOfWeek(today, { locale: faIR }), weekOffset),
   });
   const getStreakCount = (habit: Habit) => {
     const dates = habit.completed.sort((a, b) => b.getTime() - a.getTime());

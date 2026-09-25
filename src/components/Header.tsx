@@ -1,39 +1,38 @@
 import { useHabits } from "../hooks/useHabits";
 import { faIR } from "date-fns/locale";
-import { getStartEndOfWeekInMonth } from "../lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
-import { addWeeks, format, getWeek, isSameWeek, subWeeks } from "date-fns";
+import {
+  addWeeks,
+  eachDayOfInterval,
+  endOfWeek,
+  format,
+  isSameDay,
+  startOfWeek,
+} from "date-fns";
 
 function Header() {
-  const { habitDate, setHabitDate, habits } = useHabits();
-  const { year, month, weekNumber } = habitDate;
-  const weekDates = getStartEndOfWeekInMonth(year, month, weekNumber, {
+  const { habits, weekOffset, setWeekOffset } = useHabits();
+  const today = new Date();
+  const visibleWeeks = eachDayOfInterval({
+    start: addWeeks(startOfWeek(today, { locale: faIR }), weekOffset),
+    end: addWeeks(endOfWeek(today, { locale: faIR }), weekOffset),
     locale: faIR,
   });
-  const today = new Date();
-  const isCurrentWeek = isSameWeek(today, weekDates.start, { locale: faIR });
 
-  const setWeekFromStart = (weekStart: Date) => {
-    setHabitDate({
-      year: weekStart.getFullYear(),
-      month: weekStart.getMonth() + 1,
-      weekNumber: getWeek(weekStart, { locale: faIR }),
-    });
-  };
-
-  const handlePrevWeek = () => {
-    setWeekFromStart(subWeeks(weekDates.start, 1));
-  };
-
-  const handleNextWeek = () => {
-    if (isCurrentWeek) {
-      return; // Prevent going to the next week if it's the current week
+  const onPreviousWeek = () => {
+    if (habits.length > 0) {
+      setWeekOffset(weekOffset - 1);
     }
-
-    setWeekFromStart(addWeeks(weekDates.start, 1));
   };
 
+  const onNextWeek = () => {
+    if (habits.length > 0) {
+      setWeekOffset(weekOffset + 1);
+    }
+  };
+
+  const isCurrentWeek = visibleWeeks.some((date) => isSameDay(date, today));
   return (
     <header className="flex flex-col items-start gap-4 w-full">
       <ThemeToggle />
@@ -49,8 +48,8 @@ function Header() {
 
         <div className="flex flex-col items-center gap-1">
           <span className="text-sm text-zinc-400">
-            {format(weekDates.start, "MMM dd")} -{" "}
-            {format(weekDates.end, "MMM dd")}
+            {format(visibleWeeks[0], "MMM dd")} -{" "}
+            {format(visibleWeeks.at(-1)!, "MMM dd")}
           </span>
 
           <div className="flex mt-1">
@@ -58,7 +57,7 @@ function Header() {
               variant="default"
               size="default"
               disabled={habits.length === 0}
-              onClick={handlePrevWeek}
+              onClick={onPreviousWeek}
               className="rounded-r-none"
             >
               Prev
@@ -67,7 +66,7 @@ function Header() {
               variant="default"
               size="default"
               disabled={isCurrentWeek || habits.length === 0}
-              onClick={handleNextWeek}
+              onClick={onNextWeek}
               className="rounded-l-none"
             >
               Next

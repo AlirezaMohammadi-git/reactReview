@@ -13,7 +13,6 @@ import {
 import { Button } from "./ui/button";
 import type { Habit } from "../lib/types";
 import { useHabits } from "../hooks/useHabits";
-import { getStartEndOfWeekInMonth } from "@/lib/utils";
 
 export function HabitList() {
   const { habits, deleteHabit, toggleHabitCompletion } = useHabits();

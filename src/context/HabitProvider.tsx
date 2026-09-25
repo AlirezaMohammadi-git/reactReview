@@ -3,13 +3,14 @@ import { HabitContext } from "../hooks/useHabits";
 import type { Habit, HabitDate } from "../lib/types";
 import { getWeek } from "date-fns";
 import { faIR } from "date-fns/locale";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export default function HabitProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [habits, setHabit] = useState<Habit[]>([]);
+  const [habits, setHabit] = useLocalStorage<Habit[]>("habits", []);
   const [habitDate, setHabitDate] = useState<HabitDate>(() => {
     const currentDate = new Date();
     const year = currentDate.getFullYear();

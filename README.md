@@ -2,6 +2,12 @@
 
 This project is created to review react.
 
+Link of reference video:
+
+```
+https://youtu.be/9aTRnV6g0eQ?si=dQIaLDAKRzFpyuoB
+```
+
 ## Expanding the Oxlint configuration
 
 If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
